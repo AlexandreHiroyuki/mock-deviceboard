@@ -1,5 +1,7 @@
 # MockDevboard
 
+**"Watch your devices with intelligence"**
+
 Connect with devices and plot data, possibly creating mock devices and data. This project was created as part of the bem-te-vi challenge.
 
 ## Installation
@@ -11,3 +13,7 @@ Connect with devices and plot data, possibly creating mock devices and data. Thi
 ```bash
 docker
 ```
+
+
+## Integrate your device using our API
+

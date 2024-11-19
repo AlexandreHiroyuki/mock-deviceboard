@@ -22,6 +22,7 @@
   },
   "devDependencies": {
     "@pandacss/dev": "^0.48.0",
+    "@pandacss/eslint-plugin": "^0.2.0",
     "@remix-run/dev": "^2.14.0",
     "@types/react": "^18.2.20",
     "@types/react-dom": "^18.2.7",
