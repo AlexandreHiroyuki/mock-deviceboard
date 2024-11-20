@@ -22,7 +22,9 @@ module.exports = {
   ignorePatterns: ['!**/.server', '!**/.client'],
 
   // Base config
-  extends: ['eslint:recommended'],
+  extends: ['eslint:recommended', 'plugin:@pandacss/recommended'],
+
+  commonjs: true,
 
   overrides: [
     // React
@@ -33,8 +35,7 @@ module.exports = {
         'plugin:react/recommended',
         'plugin:react/jsx-runtime',
         'plugin:react-hooks/recommended',
-        'plugin:jsx-a11y/recommended',
-        'plugin:@pandacss/recommended'
+        'plugin:jsx-a11y/recommended'
       ],
       settings: {
         react: {
@@ -46,7 +47,10 @@ module.exports = {
           { name: 'NavLink', linkAttribute: 'to' }
         ],
         'import/resolver': {
-          typescript: {}
+          typescript: {},
+          node: {
+            extensions: ['.js', '.jsx', '.ts', '.tsx', '.mjs']
+          }
         }
       }
     },
