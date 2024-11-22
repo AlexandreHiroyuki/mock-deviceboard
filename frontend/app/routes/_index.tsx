@@ -1,14 +1,12 @@
 import type { MetaFunction } from '@remix-run/node'
-import {
-  Button,
-  Form,
-  Input,
-  Label,
-  Text,
-  TextField
-} from 'react-aria-components'
+import { Button, Form } from 'react-aria-components'
+import { useForm } from 'react-hook-form'
 import { css } from 'styled-system/css'
 import { grid } from 'styled-system/patterns'
+
+import { zodResolver } from '@hookform/resolvers/zod'
+import FormField from '~/components/FormField'
+import { FormData, UserSchema } from '~/types'
 
 const styleIndexGrid = grid({
   columns: { base: 1, lg: 2 },
@@ -23,7 +21,7 @@ const styleIndexGrid = grid({
 const styleBannerBox = css({
   display: 'flex',
   flexDirection: 'column',
-  justifyContent: 'center',
+  justifyContent: { base: 'flex-end', lg: 'center' },
   alignItems: 'center'
 })
 
@@ -48,44 +46,30 @@ const styleAuthForm = css({
   textAlign: 'left'
 })
 
-const styleFormInputField = css({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'stretch',
-
-  my: '4'
-})
-
-const styleFormInputLabel = css({
-  fontSize: 'sm',
-  fontWeight: 'bold'
-})
-
-const styleFormInput = css({
-  fontSize: 'md',
-  p: '1',
-  mt: '1',
-  borderRadius: 'md',
-  border: '1px solid',
-  borderColor: 'gray'
-})
-
-const styleFormInputDescription = css({
-  fontSize: 'xs',
-  color: 'gray'
-})
-
 export const meta: MetaFunction = () => {
   return [{ title: 'Mock Devboard' }]
 }
 
 export default function Index() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setError
+  } = useForm<FormData>({
+    resolver: zodResolver(UserSchema) // Apply the zodResolver
+  })
+
+  const onSubmit = async (data: FormData) => {
+    console.log('SUCCESS', data)
+  }
+
   return (
     <div className={styleIndexGrid}>
       <div className={styleBannerBox}>
         <h1
           className={css({
-            fontSize: '6xl',
+            fontSize: { base: '4xl', lg: '6xl' },
             fontWeight: 'bold'
           })}
         >
@@ -118,7 +102,7 @@ export default function Index() {
       </div>
 
       <div className={styleAuthBox}>
-        <Form className={styleAuthForm}>
+        <Form onSubmit={handleSubmit(onSubmit)} className={styleAuthForm}>
           <h2
             className={css({
               fontSize: '2xl',
@@ -130,32 +114,32 @@ export default function Index() {
             Start Now! Don't be left out of the IoT's unstoppable innovation.
           </h2>
 
-          <TextField name='email' type='email' className={styleFormInputField}>
-            <Label className={styleFormInputLabel}>Email</Label>
-            <Input className={styleFormInput} />
-            <Text slot='description' className={styleFormInputDescription}>
-              Email must be in a valid format.
-            </Text>
-          </TextField>
+          <FormField
+            type='email'
+            placeholder='Enter an email...'
+            name='email'
+            label='Email'
+            register={register}
+            error={errors.email}
+          />
 
-          <TextField
-            name='password'
+          <FormField
             type='password'
-            className={styleFormInputField}
-          >
-            <Label className={styleFormInputLabel}>Password</Label>
-            <Input className={styleFormInput} />
-            <Text slot='description' className={styleFormInputDescription}>
-              Password must be at least 8 characters.
-            </Text>
-          </TextField>
+            placeholder='Enter a password...'
+            name='password'
+            label='Password'
+            register={register}
+            error={errors.password}
+          />
 
           <div
             className={css({
               display: 'flex',
               flexDirection: 'row',
               justifyContent: 'space-between',
-              alignItems: 'center'
+              alignItems: 'center',
+
+              pt: '4'
             })}
           >
             <Button
