@@ -1,5 +1,5 @@
-import { Input, Label, TextField } from 'react-aria-components'
-import { FieldError } from 'react-hook-form'
+import { FieldError, Input, Label, TextField } from 'react-aria-components'
+import * as HookForm from 'react-hook-form'
 import { css } from 'styled-system/css'
 
 import { FormFieldProps } from '~/types'
@@ -17,7 +17,7 @@ const styleFormInputLabel = css({
   fontWeight: 'bold'
 })
 
-const styleFormInput = (error: FieldError | undefined) =>
+const styleFormInput = (error: HookForm.FieldError | undefined) =>
   css({
     fontSize: 'md',
     p: '1',
@@ -28,7 +28,7 @@ const styleFormInput = (error: FieldError | undefined) =>
 
     _focus: {
       outlineColor: error ? 'red.500' : 'primary.500',
-      bg: error ? 'red.50' : 'primary.50'
+      bgColor: error ? 'red.50' : 'primary.50'
     }
   })
 
@@ -47,14 +47,22 @@ const FormField: React.FC<FormFieldProps> = ({
   error,
   valueAsNumber
 }) => (
-  <TextField name={name} type={type} className={styleFormInputField}>
+  <TextField
+    name={name}
+    type={type}
+    isInvalid={error !== undefined}
+    className={styleFormInputField}
+  >
     <Label className={styleFormInputLabel}>{label}</Label>
     <Input
       placeholder={placeholder}
       {...register(name, { valueAsNumber })}
       className={styleFormInput(error)}
     />
-    {error && <span className={styleInputError}>{error.message}</span>}
+
+    {error && (
+      <FieldError className={styleInputError}>{error.message}</FieldError>
+    )}
   </TextField>
 )
 export default FormField

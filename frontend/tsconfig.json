@@ -6,7 +6,6 @@
     "**/.server/**/*.tsx",
     "**/.client/**/*.ts",
     "**/.client/**/*.tsx",
-    "src",
     "styled-system"
   ],
   "compilerOptions": {

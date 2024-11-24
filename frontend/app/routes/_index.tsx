@@ -1,11 +1,21 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import type { MetaFunction } from '@remix-run/node'
-import { Button, Form } from 'react-aria-components'
+import { useNavigate } from '@remix-run/react'
+import { useEffect, useRef, useState } from 'react'
+import {
+  Button,
+  Dialog,
+  Form,
+  Heading,
+  OverlayArrow,
+  Popover
+} from 'react-aria-components'
 import { useForm } from 'react-hook-form'
 import { css } from 'styled-system/css'
 import { grid } from 'styled-system/patterns'
 
-import { zodResolver } from '@hookform/resolvers/zod'
 import FormField from '~/components/FormField'
+import { api } from '~/services/api'
 import { FormData, UserSchema } from '~/types'
 
 const styleIndexGrid = grid({
@@ -46,6 +56,24 @@ const styleAuthForm = css({
   textAlign: 'left'
 })
 
+const stylePopover = css({
+  bgColor: 'red.300',
+  borderColor: 'red.900',
+  borderWidth: '1px',
+  borderRadius: 'md',
+  borderStyle: 'none',
+  outline: 'none',
+
+  maxWidth: '250px',
+
+  p: '4'
+})
+
+const stylePopoverArrow = css({
+  display: 'block',
+  fill: 'red.300'
+})
+
 export const meta: MetaFunction = () => {
   return [{ title: 'Mock Devboard' }]
 }
@@ -59,10 +87,43 @@ export default function Index() {
   } = useForm<FormData>({
     resolver: zodResolver(UserSchema) // Apply the zodResolver
   })
+  const navigate = useNavigate()
+
+  const [submitType, setSubmitType] = useState('signin')
+  const [isPopoverOpen, setPopoverOpen] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
+  const triggerRef = useRef(null)
 
   const onSubmit = async (data: FormData) => {
-    console.log('SUCCESS', data)
+    try {
+      console.log(data, `/${submitType}`)
+      const response = await api.post(`/${submitType}`, { params: data }) // Make a POST request
+
+      localStorage.setItem('token', response.data) // Store the token in the local storage
+      setPopoverOpen(false)
+      navigate('/dashboard') // Redirect to the dashboard
+    } catch (error: any) {
+      const errorBody = error.response.data
+
+      setError(errorBody.type, { message: errorBody.message }) // Set the error
+
+      if (errorBody.type === 'form' || errorBody.type === 'api') {
+        setPopoverOpen(true)
+        setErrorMessage(`${error.status}: ${errorBody.message}.`)
+      } else {
+        setPopoverOpen(false)
+      }
+      console.error('Submitting form failed!', error)
+    }
   }
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+
+    if (token) {
+      console.log('Token:', token)
+    }
+  }, [])
 
   return (
     <div className={styleIndexGrid}>
@@ -102,7 +163,29 @@ export default function Index() {
       </div>
 
       <div className={styleAuthBox}>
-        <Form onSubmit={handleSubmit(onSubmit)} className={styleAuthForm}>
+        <Popover
+          triggerRef={triggerRef}
+          isOpen={isPopoverOpen}
+          onOpenChange={setPopoverOpen}
+          placement='top'
+          className={stylePopover}
+        >
+          <OverlayArrow className={stylePopoverArrow}>
+            <svg width={12} height={12} viewBox='0 0 12 12'>
+              <path d='M0 0 L6 6 L12 0' />
+            </svg>
+          </OverlayArrow>
+          <Dialog>
+            <Heading slot='title'>
+              <span>{errorMessage}</span>
+            </Heading>
+          </Dialog>
+        </Popover>
+        <Form
+          onSubmit={handleSubmit(onSubmit)}
+          ref={triggerRef}
+          className={styleAuthForm}
+        >
           <h2
             className={css({
               fontSize: '2xl',
@@ -143,6 +226,7 @@ export default function Index() {
             })}
           >
             <Button
+              onPress={() => setSubmitType('signin')}
               type='submit'
               className={css({
                 borderRadius: 'md',
@@ -156,6 +240,7 @@ export default function Index() {
             </Button>
 
             <Button
+              onPress={() => setSubmitType('signup')}
               type='submit'
               className={css({
                 borderRadius: 'md',
