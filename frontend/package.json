@@ -6,22 +6,27 @@
   "scripts": {
     "prepare": "panda codegen",
     "build": "remix vite:build",
-    "dev": "remix vite:dev",
+    "dev": "remix vite:dev --host",
     "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
     "start": "remix-serve ./build/server/index.js",
     "typecheck": "tsc"
   },
   "dependencies": {
+    "@hookform/resolvers": "^3.9.1",
     "@remix-run/node": "^2.14.0",
     "@remix-run/react": "^2.14.0",
     "@remix-run/serve": "^2.14.0",
+    "axios": "^1.7.7",
     "isbot": "^4.1.0",
     "react": "^18.2.0",
     "react-aria-components": "^1.4.1",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-hook-form": "^7.53.2",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@pandacss/dev": "^0.48.0",
+    "@pandacss/eslint-plugin": "^0.2.0",
     "@remix-run/dev": "^2.14.0",
     "@types/react": "^18.2.20",
     "@types/react-dom": "^18.2.7",
