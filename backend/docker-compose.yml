@@ -1,0 +1,17 @@
+version: '3.7'
+
+services:
+  postgres:
+    container_name: mockdevboard-postgres
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=mockword123
+      - POSTGRES_DB=mockdevboard-postgres
+    volumes:
+      - mockdevboard-postgres-data:/bitnami/postgresql
+
+volumes:
+  mockdevboard-postgres-data:

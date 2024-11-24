@@ -1,16 +1,35 @@
 import { serve } from '@hono/node-server'
+import dotenv from 'dotenv'
 import { Hono } from 'hono'
+import { cors } from 'hono/cors'
+import { logger } from 'hono/logger'
 
-const app = new Hono()
+import { routes } from './routes.js'
 
-app.get('/', (c) => {
-  return c.text('Hello Hono!')
+dotenv.config({
+  path: '.env'
 })
 
-const port = 3000
-console.log(`Server is running on http://localhost:${port}`)
+const app = new Hono()
+app.use(logger())
+app.use(
+  '*',
+  cors({
+    origin: [String(process.env.CLIENT_ORIGIN)],
+    allowHeaders: ['Content-Type', 'Authorization'],
+    allowMethods: ['GET', 'HEAD', 'PUT', 'POST', 'DELETE', 'PATCH'],
+    exposeHeaders: ['Content-Length'],
+    maxAge: 600,
+    credentials: true
+  })
+)
 
+app.route('/', routes)
+
+const port = 3000
 serve({
   fetch: app.fetch,
   port
 })
+
+console.log('Server running...')
