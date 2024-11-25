@@ -5,6 +5,8 @@ import userController from './controllers/user.controller.js'
 
 const routes = new Hono()
 
+routes.get('/', (c) => c.json({ message: 'Hello, Hono!' }))
+
 routes.post('/signup', userController.create)
 routes.post('/signin', userController.access)
 
