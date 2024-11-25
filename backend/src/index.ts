@@ -10,6 +10,8 @@ dotenv.config({
   path: '.env'
 })
 
+const port = Number(process.env.PORT) || 3000
+
 const app = new Hono()
 app.use(logger())
 app.use(
@@ -26,7 +28,6 @@ app.use(
 
 app.route('/', routes)
 
-const port = 3000
 serve({
   fetch: app.fetch,
   port
