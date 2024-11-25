@@ -39,6 +39,8 @@ Tip: generate JWT_SECRET using:
 openssl rand -base64 172 | tr -d '\ n'
 ```
 
+> Where 172 is the number of characters in the generated string (choose the one you want).
+
 Migration:
 
 ```sh
@@ -47,3 +49,4 @@ yarn drizzle-kit push
 
 ## Integrate your device using our API
 
+(WIP)

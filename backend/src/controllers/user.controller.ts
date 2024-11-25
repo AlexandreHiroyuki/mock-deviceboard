@@ -8,15 +8,14 @@ import { UserSchema } from '../types.js'
 
 const JWT_SECRET = process.env.JWT_SECRET
 
-// Helper function to generate a JWT
 const generateToken = (userId: string) => {
-  return jwt.sign({ id: userId }, JWT_SECRET, { expiresIn: '1h' })
+  return jwt.sign({ id: userId }, JWT_SECRET, { expiresIn: '12h' })
 }
 
 export default {
   async create(c: any) {
-    const body = await c.req.json()
-    const result = UserSchema.safeParse(body.params)
+    const req = await c.req.json()
+    const result = UserSchema.safeParse(req.body)
 
     console.log(result)
 
@@ -58,12 +57,15 @@ export default {
       .values({ email: email, password: hashedPassword })
       .returning()
 
-    return c.text(generateToken(String(newUser.id)), 201)
+    return c.json(
+      { token: generateToken(String(newUser.id)), userId: newUser.id },
+      201
+    )
   },
 
   async delete(c: any) {
-    const body = await c.req.json()
-    const result = UserSchema.safeParse(body.params)
+    const req = await c.req.json()
+    const result = UserSchema.safeParse(req.params)
 
     if (!result.success) {
       console.log('Validation error: ', result.error.errors)
@@ -97,8 +99,8 @@ export default {
   },
 
   async access(c: any) {
-    const body = await c.req.json()
-    const result = UserSchema.safeParse(body.params)
+    const req = await c.req.json()
+    const result = UserSchema.safeParse(req.body)
 
     console.log(result)
 
@@ -131,20 +133,16 @@ export default {
         )
       }
 
-      let passwordMath = false
+      const match = await bcrypt.compare(password, existingUser.password)
 
-      // console.log(await bcrypt.hash(password, 10))
-      console.log(existingUser.password)
-
-      bcrypt.compare(password, existingUser.password, (err, data) => {
-        console.log('error: ', err)
-        console.log('data: ', data)
-        //if both match than you can do anything
-        passwordMath = data
-      })
-
-      if (passwordMath) {
-        return c.json({ token: generateToken(String(existingUser.id)) }, 200)
+      if (match) {
+        return c.json(
+          {
+            token: generateToken(String(existingUser.id)),
+            userId: existingUser.id
+          },
+          200
+        )
       } else {
         console.log('Wrong password')
         return c.json({ type: 'password', message: 'Wrong password' }, 401)

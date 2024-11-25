@@ -87,6 +87,7 @@ export default function Index() {
   } = useForm<FormData>({
     resolver: zodResolver(UserSchema) // Apply the zodResolver
   })
+
   const navigate = useNavigate()
 
   const [submitType, setSubmitType] = useState('signin')
@@ -96,10 +97,10 @@ export default function Index() {
 
   const onSubmit = async (data: FormData) => {
     try {
-      console.log(data, `/${submitType}`)
-      const response = await api.post(`/${submitType}`, { params: data }) // Make a POST request
+      const response = await api.post(`/${submitType}`, { body: data }) // Make a POST request
 
-      localStorage.setItem('token', response.data) // Store the token in the local storage
+      localStorage.setItem('token', response.data.token) // Store the token in the local storage
+      localStorage.setItem('userId', response.data.userId) // Store the email in the local storage
       setPopoverOpen(false)
       navigate('/dashboard') // Redirect to the dashboard
     } catch (error: any) {
@@ -121,7 +122,7 @@ export default function Index() {
     const token = localStorage.getItem('token')
 
     if (token) {
-      console.log('Token:', token)
+      navigate('/dashboard')
     }
   }, [])
 

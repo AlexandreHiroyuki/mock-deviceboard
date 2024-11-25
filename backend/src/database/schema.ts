@@ -6,3 +6,12 @@ export const UsersTable = pgTable('users', {
   password: varchar({ length: 255 }).notNull(),
   createdAt: timestamp('createdAt').defaultNow().notNull()
 })
+
+export const DevicesTable = pgTable('devices', {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  userId: integer()
+    .notNull()
+    .references(() => UsersTable.id),
+  name: varchar({ length: 255 }).notNull(),
+  createdAt: timestamp('createdAt').defaultNow().notNull()
+})

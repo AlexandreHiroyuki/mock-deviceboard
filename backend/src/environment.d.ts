@@ -1,4 +1,4 @@
-import { PrivateKey } from 'jsonwebtoken'
+import { Secret } from 'jsonwebtoken'
 
 declare global {
   namespace NodeJS {
@@ -10,8 +10,8 @@ declare global {
       DB_USERNAME: string
       DB_PASSWORD: string
       CLIENT_ORIGIN: string
-      POSTGRES_URL: string
-      JWT_SECRET: PrivateKey
+      DATABASE_URL: string
+      JWT_SECRET: Secret
     }
   }
 }
